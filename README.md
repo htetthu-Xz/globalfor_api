@@ -38,6 +38,19 @@ npm run build
 
 The complete production deployment and rollback procedure is in [`../../docs/deployment.md`](../../docs/deployment.md).
 
+## Render client-preview deployment
+
+The included `Dockerfile` builds the Laravel application, compiles the Studio's Vite assets and serves it with Apache on Render's `PORT` (default `10000`). Configure the Render Web Service with:
+
+- **Language:** Docker
+- **Root Directory:** `apps/backend`
+- **Dockerfile Path:** `Dockerfile`
+- **Health Check Path:** `/up`
+
+At minimum, set `APP_KEY`, `APP_URL`, `ASSET_URL` (the same HTTPS URL as `APP_URL`), `DB_CONNECTION`, the database connection values, `PUBLIC_SITE_URL`, `CORS_ALLOWED_ORIGINS` and `PUBLIC_STORAGE_URL` in Render. Keep `APP_DEBUG=false` and set `TRUSTED_PROXIES=*` only when the service is reachable exclusively through Render's proxy.
+
+The container runs `php artisan migrate --force` when it starts. Set `RUN_MIGRATIONS=false` only if migrations are handled separately. For persistent Studio uploads, attach a Render disk at `/var/www/html/storage`; without a disk or an object-storage disk, uploaded files are ephemeral.
+
 ## Public API foundation
 
 - `GET /api/v1/status`
